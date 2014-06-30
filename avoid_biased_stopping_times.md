@@ -124,4 +124,4 @@ One can easily re-use this idea in the context of an A/B test; instead of the si
 
 ![diagram](http://nerds.airbnb.com/wp-content/uploads/2014/05/img6_dynamic_p.png)
 
-In reality, the p-value never plateaus like that. (Thought experiment to see this: If you run an A/A test forever unless you hit a certain fixed p-value, you'll eventually get a false positive with probability \\(100\%\\).) That's how I see it, but I'm very happy to be proven wrong :-) 
+In reality, the p-value never plateaus like that. (Thought experiment to see this: If you run an A/A test forever unless you hit a certain fixed p-value, you'll eventually get a false positive with probability \\(100\%\\).) Probably what's meant is they decided ahead of time so stop experiments after 30 days, and decide whether a significan effect exists at that point using \\(p = 0.05\\) (as we did above, deciding to stop and evaluate when the number of flips reached \\(100\\)). That's how I see it, but I'm very happy to be proven wrong :-) 

@@ -29,13 +29,13 @@ It's rare to have an A/B test with 100 different variants, but the same pattern 
 
 ## Hierarchical Models
 
-So how do "hierarchical models" solve this problem? They model all of the buckets at once, rather than treating each in isolation. More specifically, they use the observed rates of each bucket to infer a prior distribution for the *true* rates; these priors influence the predicted rates by "shrinking" posterior distributions towards the prior.
+So how do "hierarchical models" solve this problem? They model all of the test buckets at once, rather than treating each in isolation. More specifically, they use the observed rates of each bucket to infer a prior distribution for the *true* rates; these priors influence the predicted rates by "shrinking" posterior distributions towards the prior.
 
-Let's work up to this idea. **First**, let's remember how we model a single rate with no prior information. Let's say, as we did earlier, that we flip a coin 100 times and that it lands heads-up on 60 of them. We model this as \\(p \sim Beta(61, 41)\\), and our posterior distribution looks like this:
+Let's work our way up to this idea. **First**, let's remember how we model a single rate with no prior information. Let's say, as we did earlier, that we flip a coin 100 times and that it lands heads-up on 60 of them. We model this as \\(p \sim Beta(61, 41)\\), and our posterior distribution looks like this:
 
 ![simple posterior](http://i.imgur.com/RqGfk97.png)
 
-**Second**, let's suppose, unrealistically, that we have an explicit prior distribution. We've flipped a lot of similar coins in the past, and we're pretty sure that the true bias of such coins follows a \\(Beta(51, 51)\\) distribution. (Again, this is unrealistic, but bear with me for a moment.) Applying Bayes rule with this prior, we would now model our observation of 60 out of 100 heads-up as \\(p \sim Beta(112, 92)\\). (Aside: There is a handy general rule here. If your prior is \\(p \sim Beta(a,b)\\) and you observe \\(X = k\\) for \\(X \sim Bin(n, p)\\), then your posterior is \\((p \mid X) \sim Beta(a+k, b+n-k)\\). Beta is a "conjugate prior" for Bin, meaning that the posterior is also Beta.) Now our posterior distribution looks as follows. We keep the original for reference:
+**Second**, let's suppose, unrealistically, that we have an explicit prior distribution. We've flipped a lot of similar coins in the past, and we're pretty sure that the true bias of such coins follows a \\(Beta(51, 51)\\) distribution. (Again, this is unrealistic, but bear with me for a moment.) Applying Bayes' rule with this prior, we would now model our observation of 60 out of 100 heads-up as \\(p \sim Beta(112, 92)\\). (Aside: There is a handy general rule here. If your prior is \\(p \sim Beta(a,b)\\) and you observe \\(X = k\\) for \\(X \sim Bin(n, p)\\), then your posterior is \\((p \mid X) \sim Beta(a+k, b+n-k)\\). Beta is a "conjugate prior" for Bin, meaning that the posterior is also Beta.) Now our posterior distribution looks as follows. We keep the original for reference:
 
 ![second posterior](http://i.imgur.com/wx0lk0O.png)
 

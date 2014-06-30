@@ -5,9 +5,9 @@ title: Use the Beta Distribution
 
 # Use the Beta Distribution
 
-When you have a k-successes-out-of-n-trials-type test, you should use Beta to model your posterior distributions. More concretely: If you have test with \\(k\\\) success amongst \\(n\\) trials, your posterior distribution is \\(Beta(k+1, n-k+1)\\). 
+When you have a k-successes-out-of-n-trials-type test, you should use the Beta distribution to model your posterior distributions instead of using the normal approximation. More concretely: If you have test with \\(k\\\) success amongst \\(n\\) trials, your posterior distribution is \\(Beta(k+1, n-k+1)\\), and this is preferable to using \\(N(k/n, \sqrt{(k/n)(1-k/n)n^{-1}})\\).
 
-(Note to experts: This is assuming you have no prior; we'll address this later when we talk about hierarchical models. I'm also assuming that the trials are IID; we'll talk about this assumption later too.)
+(Note to experts: This is assuming you have no prior; we'll address this later when we talk about hierarchical models. This is also assuming that the trials are IID Bernoulli; we'll address this later when we talk about using the test's time series.)
 
 For example, if you have a coin with an unknown bias \\(p\\) and that coin lands heads-up on 60 out of 100 flips, then \\(p \sim Beta(61, 41)\\). Or more to the point for us: If you send out an email campaign and get 150 conversions out of 10,000 emails sent, then the true conversion rate \\(p\\) for the campaign is \\(Beta(151, 9851)\\) distributed.
 
@@ -18,13 +18,13 @@ For example, if you have a coin with an unknown bias \\(p\\) and that coin lands
 
 This is an uncontroversial claim; Beta is the *correct* distribution to apply in this situation, though the normal approximation has traditionally been used due to its computational convenience. (Traditionally, you would have seen 60 out of 100 heads modeled as \\(p \sim N(0.6, \sqrt{(0.6 \cdot 0.4)/100} \approx N(0.6, 0.049)\\).) For large sample experiments in which the observed ratio \\(k/n\\) is far away from \\(0\\) and \\(1\\), using the normal approximation is generally fine; it will be close to the Beta distribution in those cases. However, you can get into trouble with small samples -- especially when \\(k/n\\) is close to \\(0\\) or \\(1\\), as would be the case for very low conversion rates (e.g. only about 0.5% of visitors exposed to your ad click on it). And with the computational tools available today (when you no longer need to carry around CDF tables for every distribution you want to use), there's really no reason to prefer the normal model. So use Beta instead!
 
-What is the Beta distribution? It's a bit less well known than some of its cousins, so let's talk about this distribution in greater detail. We can describe Beta completely as follows: If \\(X\\) follows a \\(Beta(a, b)\\) distribution, then the probability mass function for \\(X\\) is: \\[p(t) = \frac{t^{a-1}(1-t)^{b-1}}{B(a, b)}.\\] Here \\(B(a,b)\\) is the Beta function (whence the name for the distribution). Typically, this constant factor is not of concern to us, as it is normalized out in calculations; one only cares that \\(p_X(t) \propto t^{a-1}(1-t)^{b-1}\\). Here's what the distribution looks like for a few different values of \\(a\\) and \\(b\\).
+So what is the Beta distribution? It's a bit less well known than some other distributions, so let's talk about it in greater detail. We can describe Beta completely as follows: If \\(X\\) follows a \\(Beta(a, b)\\) distribution, then the probability mass function for \\(X\\) is: \\[p\_X(t) = \frac{t^{a-1}(1-t)^{b-1}}{B(a, b)}.\\] Here \\(B(a,b)\\) is the Beta function (whence the name for the distribution). Typically, this constant factor is not of concern to us, as it is normalized out in calculations; one only cares that \\(p_X(t) \propto t^{a-1}(1-t)^{b-1}\\). Here's what the distribution looks like for a few different values of \\(a\\) and \\(b\\).
 
 ![some beta distributions](http://i.imgur.com/mj059cS.png)
 
 Now that we know what Beta distributions look like, let's return to two claims made in the second paragraph:
 
-1. \\(p \sim Beta(k-1, n-k+1)\\) is the right distribution for the true rate \\(p\\) when you observe \\(k\\) successes out of \\(n\\) trials. (More formally: If you know that \\(X \sim Bin(p, n)\\) and you observe \\(X = k\\), then \\(p \sim Beta(k-1, n-k+1)\\).) 
+1. \\(p \sim Beta(k-1, n-k+1)\\) is the right distribution for the true rate \\(p\\) when you observe \\(k\\) successes out of \\(n\\) trials. (More formally: If you know that \\(X \sim Bin(p, n)\\) for a fixed n, and you observe \\(X = k\\), then \\(p \sim Beta(k-1, n-k+1)\\).) 
 2. The Beta distribution and its normal approximation differ considerably when \\(n\\) is small and \\(k/n\\) is close to either \\(0\\) or \\(1\\).
 
 Again, the consequence is that it's better to model your rate-based test with Beta than with the normal distribution.
@@ -56,7 +56,7 @@ This point is even easier to make. Here's a plot of a \\(Beta(3, 19)\\) distribu
 
 The distributions differ visibly. Using the normal approximation might cause one, e.g., to underestimate the probability that the true value falls between \\(0.2\\) and \\(0.3\\) in the above. (Notice also the mass left of zero(!) in the normal approximation.)
 
-Numerically speaking, we can quantify the extent to which the two approximations differ by looking at their variation difference. As a function of \\(k\\) and \\(n\\):  \\[\delta(k,n) = \\]
+Numerically speaking, we can quantify the extent to which the two approximations differ by looking at their [variation difference](http://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures). As a function of \\(k\\) and \\(n\\):  \\[\delta(k,n) = \\]
 
 \\[\frac{1}{2}\int_{\mathbb{R}} \left| \mathbb{P}(Beta(k+1, n-k+1) = t) - \mathbb{P}(N(k/n, \sqrt{(k/n)(1-k/n)/n}) = t)\right|\\]
 
@@ -93,6 +93,6 @@ The situation becomes a little more complex when you'd like to model *several* s
 
 ## Links / References
 
-Want to know more about the Beta distribution? Check out the [first chapter](http://nbviewer.ipython.org/github/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter1_Introduction/Chapter1_Introduction.ipynb) of Cam Davidson-Pilon's *Bayesian Methods for Hackers*. 
+Want to know more about the Beta distribution? Check out the [first chapter](http://nbviewer.ipython.org/github/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter1_Introduction/Chapter1_Introduction.ipynb) of Cam Davidson-Pilon's awesome github-hosted book, *Bayesian Methods for Hackers*. 
 
 

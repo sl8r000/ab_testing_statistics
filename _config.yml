@@ -9,7 +9,6 @@ permalink:        pretty
 title:            Slater Stich
 tagline:          
 url:              http://www.slaterstich.com
-paginate:         1
 baseurl:          /ab_testing_statistics/
 author:
   name:           Slater
@@ -19,4 +18,9 @@ author:
 # Custom vars
 version:          1.0.0
 github:
-  repo:           https://github.com/
+  repo:          https://github.com/
+link_beta:      /use_the_beta_distribution/
+link_hier:      use_a_hierarchical_model
+link_biased:    avoid_biased_stopping_times
+link_retest:    retest_and_watch_the_base_rate
+
