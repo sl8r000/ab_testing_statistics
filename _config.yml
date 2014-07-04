@@ -6,8 +6,8 @@ pygments:         true
 permalink:        pretty
 
 # Setup
-title:            Slater Stich
-tagline:          
+title:            A/B Testing Statistics
+tagline:          Slater Stich
 url:              http://www.slaterstich.com
 baseurl:          /ab_testing_statistics/
 author:

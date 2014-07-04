@@ -9,16 +9,16 @@ When you have a k-successes-out-of-n-trials-type test, you should use the Beta d
 
 (Note to experts: This is assuming you have no prior; we'll address this later when we talk about hierarchical models. This is also assuming that the trials are IID Bernoulli; we'll address this later when we talk about using the test's time series.)
 
-For example, if you have a coin with an unknown bias \\(p\\) and that coin lands heads-up on 60 out of 100 flips, then \\(p \sim Beta(61, 41)\\). Or more to the point for us: If you send out an email campaign and get 150 conversions out of 10,000 emails sent, then the true conversion rate \\(p\\) for the campaign is \\(Beta(151, 9851)\\) distributed.
+For example, if you have a coin with an unknown bias \\(p\\) and that coin lands heads-up on \\(60\\) out of \\(100\\) flips, then \\(p \sim Beta(61, 41)\\). Or more to the point for us: If you send out an email campaign and get \\(150\\) conversions out of \\(10,000\\) emails sent, then the true conversion rate \\(p\\) for the campaign is \\(Beta(151, 9851)\\) distributed.
 
 <figure>
 <img src="https://i.imgur.com/RxOzIUY.png">
 <figcaption style="font-size: 0.5em; text-align: center">Posterior distribution for the true value of \(p\) given 60 heads out of 100 flips. In the figure, \(p \sim Beta(61, 41)\)</figcaption>
 </figure>
 
-This is an uncontroversial claim; Beta is the *correct* distribution to apply in this situation, though the normal approximation has traditionally been used due to its computational convenience. (Traditionally, you would have seen 60 out of 100 heads modeled as \\(p \sim N(0.6, \sqrt{(0.6 \cdot 0.4)/100} \approx N(0.6, 0.049)\\).) For large sample experiments in which the observed ratio \\(k/n\\) is far away from \\(0\\) and \\(1\\), using the normal approximation is generally fine; it will be close to the Beta distribution in those cases. However, you can get into trouble with small samples -- especially when \\(k/n\\) is close to \\(0\\) or \\(1\\), as would be the case for very low conversion rates (e.g. only about 0.5% of visitors exposed to your ad click on it). And with the computational tools available today (when you no longer need to carry around CDF tables for every distribution you want to use), there's really no reason to prefer the normal model. So use Beta instead!
+This is an uncontroversial claim; Beta is the *correct* distribution to apply in this situation, though the normal approximation has traditionally been used due to its computational convenience. (Traditionally, you would have seen \\(60\\) out of \\(100\\) heads modeled as \\(p \sim N(0.6, \sqrt{(0.6 \cdot 0.4)/100} \approx N(0.6, 0.049)\\).) For large sample experiments in which the observed ratio \\(k/n\\) is far away from \\(0\\) and \\(1\\), using the normal approximation is generally fine; it will be close to the Beta distribution in those cases. However, you can get into trouble with small samples -- especially when \\(k/n\\) is close to \\(0\\) or \\(1\\), as would be the case for very low conversion rates (e.g. only about \\(0.5\%\\) of visitors exposed to your ad click on it). And with the computational tools available today (when you no longer need to carry around CDF tables for every distribution you want to use), there's really no reason to prefer the normal model. So use Beta instead!
 
-So what is the Beta distribution? It's a bit less well known than some other distributions, so let's talk about it in greater detail. We can describe Beta completely as follows: If \\(X\\) follows a \\(Beta(a, b)\\) distribution, then the probability mass function for \\(X\\) is: \\[p\_X(t) = \frac{t^{a-1}(1-t)^{b-1}}{B(a, b)}.\\] Here \\(B(a,b)\\) is the Beta function (whence the name for the distribution). Typically, this constant factor is not of concern to us, as it is normalized out in calculations; one only cares that \\(p_X(t) \propto t^{a-1}(1-t)^{b-1}\\). Here's what the distribution looks like for a few different values of \\(a\\) and \\(b\\).
+So what is the Beta distribution? We can describe Beta completely as follows: If \\(X\\) follows a \\(Beta(a, b)\\) distribution, then the probability mass function for \\(X\\) is: \\[p\_X(t) = \frac{t^{a-1}(1-t)^{b-1}}{B(a, b)}.\\] Here \\(B(a,b)\\) is the Beta function (whence the name for the distribution). Typically, this constant factor is not of concern to us, as it is normalized out in calculations; one only cares that \\(p_X(t) \propto t^{a-1}(1-t)^{b-1}\\). Here's what the distribution looks like for a few different values of \\(a\\) and \\(b\\).
 
 ![some beta distributions](http://i.imgur.com/mj059cS.png)
 
@@ -89,7 +89,7 @@ We can see the behavior that we expected: The error is worse when \\(k/n\\) is c
 
 In conclusion: Use the Beta distribution! It's more accurate, and just as easy to compute as its normal approximation. Moreover: It's simply the correct distribution to use when you're modeling a true rate after observing \\(k\\) successes out of \\(n\\) trials. (Formally: If you know that \\(X \sim Bin(p, n)\\) and you observe \\(X = k\\), then \\(p \sim Beta(k-1, n-k+1)\\).)
 
-The situation becomes a little more complex when you'd like to model *several* such rates, as you would when you have an A/B test with several variants. We'll handle this problem in the next section.
+The situation becomes a little more complex when you'd like to model *several* such rates, as you would when you have an A/B test with many variants. But we'll talk about that when we get to [hierarchical models]({{ site.baseurl }}{{ site.link_hier }}).
 
 ## Links / References
 

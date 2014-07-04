@@ -5,16 +5,16 @@ title: Avoid Biased Stopping Times
 
 # Avoid Biased Stopping Times
 
-When you run an A/B test, you should avoid stopping the as soon as the results "look" significant. Using a stopping time that is dependent upon the results of the experiment can inflate your false-positive rate substantially.
+When you run an A/B test, you should avoid stopping the experiment as soon as the results "look" significant. Using a stopping time that is dependent upon the results of the experiment can inflate your false-positive rate substantially.
 
-To understand why this is so, let's look at a simpler experimental problem. Let's say that we have a coin in front of us, and we want to know whether it's biased -- whether it lands heads-up with probability other than 50%. If we flip the coin \\(n\\) times and it lands heads-up on \\(k\\) of them, then we know that the posterior distribution for the coin's bias is \\(p \sim Beta(k+1, n-k+1)\\). So if we do this and 0.5 isn't within a 95% credible interval for \\(p\\), then we would conclude that the coin is biased with p-value \\(<= 0.05\\). This is all fine as long as the number of flips we perform, \\(n\\), doesn't depend on the results of the previous flips. If we do *that*, then we bias the experiment to favor extremal outcomes.
+To understand why this is so, let's look at a simpler experimental problem. Let's say that we have a coin in front of us, and we want to know whether it's biased -- whether it lands heads-up with probability other than \\(50\%\\). If we flip the coin \\(n\\) times and it lands heads-up on \\(k\\) of them, then we know that the posterior distribution for the coin's bias is \\(p \sim Beta(k+1, n-k+1)\\). So if we do this and 0.5 isn't within a 95% credible interval for \\(p\\), then we would conclude that the coin is biased with p-value \\(<= 0.05\\). This is all fine as long as the number of flips we perform, \\(n\\), doesn't depend on the results of the previous flips. If we do *that*, then we bias the experiment to favor extremal outcomes.
 
 Let's clarify this simulating these two experimental procedures in code.
 
 1. **Unbiased Procedure**: We flip the coin 1000 times. Let \\(k\\) be the number of times that the coin landed heads-up. After all 1000 flips, we look at the \\(p \sim Beta(k+1, 1000-k+1)\\) distribution. If 0.5 lies outside a the 95% credible interval for \\(p\\), then we conclude that \\(p\neq 0.5\\); if 0.5 does lie within the 95% credible interval, then we're not sure -- we don't reject the idea that \\(p = 0.5\\).
 2. **Biased Procedure**. We start flipping the coin. For each \\(n\\) with \\(1 < n \leq 1000\\), let \\(k\_n\\) be the number of times the coin lands heads-up after the first \\(n\\) flips. After each flip, we look at the distribution \\(p \sim Beta(k\_n+1, n-k\_n+1)\\). If 0.5 lies outside a the 95% credible interval for \\(p\\), then we immediately halt the experiment and conclude that \\(p\neq 0.5\\); if 0.5 does lie within the 95% credible interval, we continue flipping. If we make it to \\(1000\\) flips, we stop completely and follow the unbiased procedure.
 
-How many false positives do you think that the Biased Procedure will produce? If we believe our p-values, then both the biased and unbiased prodecures should have a false positive rate of about 5%. Let's repeat each procedure 1000 times, assuming that the coin really is fair, and see what the false positive rates really are:
+How many false positives do you think that the Biased Procedure will produce? We chose our p-value, \\(0.05\\), so that the false positive rate would be about \\(5\%\\). Let's repeat each procedure 1000 times, assuming that the coin really is fair, and see what the false positive rates really are:
 
 ```python
 def biased_procedure(n):
@@ -52,15 +52,15 @@ In [65]: biased_procedure(10000)
 Out[65]: 0.4912
 ```
 
-Almost *half* of the experiments under the biased procedure produced a false positive. Conversely, 5.26% of the unbiased procedure experiments resulted in a false positive -- which is close to the 5% false positive rate the we expected, given our p-value.
+Almost *half* of the experiments under the biased procedure produced a false positive. Conversely, \\(5.26\%\\) of the unbiased procedure experiments resulted in a false positive -- which is close to the 5% false positive rate the we expected, given our p-value.
 
 ## Practical Solutions
 
-The easiest way to avoid this problem is to choose a stopping time that's independent of the test results. You could, for example, decide in advance to run the test for exactly two weeks, no matter the results you observe during the test's tenure. Or you could decide to run the test until each bucket has received more than 10k visitors, again ignoring the test results until that condition is met.
+The easiest way to avoid this problem is to choose a stopping time that's independent of the test results. You could, for example, decide in advance to run the test for exactly two weeks, no matter the results you observe during the test's tenure. Or you could decide to run the test until each bucket has received more than \\(10,000\\) visitors, again ignoring the test results until that condition is met. When you can afford to wait, setting a results-independent stopping time is the easiest and most reliable way to solve this problem.
 
-Doing this in real life requires some steel-jawed stoicism, though; it's hard to continue an A/B test when A's empirical conversion rate is half of B's, and you feel like you're burning money every day that the test continues. It would be nice if there were some way to stop the test early when the results are extreme.
+Very, very rarely, doing this may require some steel-jawed stoicism; it's hard to continue an A/B test when A's empirical conversion rate is half of B's, and you feel like you're burning money every day that the test continues. In those cases, it would be nice if there were some way to stop the test early when the results are extreme.
 
-It's somewhat possible to do this. Let's return to the coin example above. Let's again assume that it's fair: For each \\(n\\), what's the right p-value to ensure that when we evaluate the test after "peeking" after the first \\(n\\) results come in, our false positive rate stays at 5%? Let's find out empirically for a few values of \\(n\\):
+It's somewhat possible to do this, but one has to be careful. Let's return to the coin example above. Let's again assume that it's fair: For each \\(n\\), what's the right p-value to ensure that when we evaluate the test after "peeking" after the first \\(n\\) results come in, our false positive rate stays at 5%? Let's find out empirically for a few values of \\(n\\):
 
 ```python
 def find_p_value(n):
@@ -100,7 +100,7 @@ And here's what that plot looks like:
 
 ![p_values](https://i.imgur.com/fG9yWn6.png)
 
-This leads to a nicely-expressed answer to our original question: When do we stop the test?
+We can translate these dynamic p-values back into the distributions that they came from in order to get a hard-and-fast boundary for stopping the test:
 
 ```python
 running_p_values = find_p_value_again(100)
@@ -118,10 +118,10 @@ One can easily re-use this idea in the context of an A/B test; instead of the si
 
 ## Two Notes
 
-*One:* In the above, it would be theoretically better if we didn't have a fixed null hypothesis for the coin's true value (namely \\(0.5\\)), but instead used a prior distribution. In practice, I never do this. I sleep at night by reminding myself that the whole point of this exercise is to find a rough estimate of an acceptable stopping time.
+*One:* In the above, it would be theoretically better if we didn't have a fixed null hypothesis for the coin's true value (namely \\(0.5\\)), but instead used a prior distribution. In practice, I never do this. I sleep at night by reminding myself that stopping early is a questionable practice in the first place, the whole point of this exercise is to find a rough estimate of an acceptable stopping in the rare cases in which one variant is so bad that the experiment needs to be killed.
 
-*Two:* Airbnb has a [wonderful article](http://nerds.airbnb.com/experiments-at-airbnb/) on the biased stopping time problem, and you should definitely check it out. As a nitpick, I disagree with this diagram:
+*Two:* Airbnb has a [great article](http://nerds.airbnb.com/experiments-at-airbnb/) on the biased stopping time problem, and you should definitely check it out. As a nitpick, I disagree with this diagram:
 
 ![diagram](http://nerds.airbnb.com/wp-content/uploads/2014/05/img6_dynamic_p.png)
 
-In reality, the p-value never plateaus like that. (Thought experiment to see this: If you run an A/A test forever unless you hit a certain fixed p-value, you'll eventually get a false positive with probability \\(100\%\\).) Probably what's meant is they decided ahead of time so stop experiments after 30 days, and decide whether a significan effect exists at that point using \\(p = 0.05\\) (as we did above, deciding to stop and evaluate when the number of flips reached \\(100\\)). That's how I see it, but I'm very happy to be proven wrong :-) 
+In reality, the p-value never plateaus like that. (If you run an A/A test forever unless you hit a certain fixed p-value, you'll eventually get a false positive with probability \\(100\%\\). Similarly, if you peek constantly and you set a flat p-value, you inexorably increase your false positive rate.) I think that this is a misstatement rather than a mistake; judging from the rest of the article, what's probably meant is that they run experiments for no more than 30 days (or some other fixed value tied to sample size), and decide whether a significan effect exists at that point using \\(p = 0.05\\) (as we did above, deciding to stop and evaluate when the number of flips reached \\(100\\) if we hadn't already squealed by then). Anyway, the article is great, and you should definitely read it! 

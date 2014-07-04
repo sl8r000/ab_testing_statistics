@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Avoid Biased Stopping Times
+title: Do Follow Up Tests
 ---
 
-# Do Follow Up tests and Watch your Overall Success Rate
+# Do Follow Up Tests and Watch your Overall Success Rate
 
 If you're running a lot of A/B tests, you should run follow-up tests and pay attention to your base success rate.
 
-Let's talk about these in reverse order. Imagine that you do everything right. You use the Beta distribution. You implement a hierarchical model. You set your stopping time in advance, and keep it independent from the test results. You set a relatively high success criterion: A probability of at least 95% that the variant is better than the control (classically, \\(p \leq 0.05\\).) You do all of that. You run \\(100\\) tests, each with all the disciplines just mentioned. Five of those \\(100\\) tests come out positive -- in five of your tests, the variant beat the control.
+Let's talk about these in reverse order. Imagine that you do everything right. You use the Beta distribution. You implement a hierarchical model. You set your stopping time in advance, and keep it independent from the test results. You set a relatively high success criterion: A probability of at least \\(95\%\\) that the variant is better than the control (classically, \\(p \leq 0.05\\).) You do all of that. You run \\(100\\) tests, each with all the disciplines just mentioned. Five of those \\(100\\) tests come out positive -- in five of your tests, the variant beat the control.
 
 How many of those variants do you think are *really* better than the control, though? Would you be willing to bet on them at uneven odds? The problem is that getting five positives out of \\(100\\) trials with \\(p = 0.05\\) isn't inconsistent with the idea that every one of those \\(100\\) tests was an A/A test. Indeed, you'd expect five false positives out of \\(100\\) trials under the A/A hypothesis.
 
@@ -15,4 +15,4 @@ The point is just that you should pay attention to your base rates. If you run \
 
 I also recommend follow-up testing. You tried out three variants, B, C, and D against the control A. Variant C won. Don't deploy it fully; drive 95% of your traffic to Variant C and 5% to Variant A (or some modification on this; the percent split is not important as long as you will have reasonable statistical power within an acceptable time period). It's a small cost in terms of conversion (\\(0.05(\text{C's rate} - \text{A's rate})\\) for the duration of the test), and will give you more information about C's true performance relative to A.
 
-I think this is more of a mindset point than a statistical one. The point of A/B testing is to find out which of several variants is the best in terms of the metric for which you're optimizing. Your statistical setup -- your t-tests, your hierarchical model, your Marascuillo procedure, etc. -- is there to help you do that. But ultimately your goal isn't to satisfy the conditions of a particular test, it's to find the best variant. And to do that you may need to do a number of additional things, such as applying multiple statistical tests, conducting regular A/A tests and data audits, doing a follow-up 95%/5% split, and paying attention to your overall success rate.
+I think this is more of a mindset point than a statistical one. The point of A/B testing is to find out which of several variants is the best in terms of the metric for which you're optimizing. Your statistical setup -- your t-tests, your hierarchical model, your Marascuillo procedure, etc. -- is there to help you do that. But ultimately your goal isn't to satisfy the conditions of a particular test, it's to find the best variant. And to do that you may need to do a number of additional things, such as applying multiple statistical tests, conducting regular A/A tests and data audits, doing a follow-up \\(95\%:\5%\\) split, and paying attention to your overall success rate. Ultimately, if you aren't willing to bet your company's money on the test results, you need to find out more. (Alternative formulation of this maxim for the self-interested: Suppose that you're paid or docked \\(1\%\\) of the *true* impact of every test you run. So if the test makes the company \\(\$1,000,000\\), then you get \\(\$10,000\\); but if the test loses the company \\(\$1,000,000\\), then you lose \\(\$10,000\\). Ask yourself: Based on the test data I have right now, am I willing to take that bet?)
