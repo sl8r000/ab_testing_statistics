@@ -7,7 +7,7 @@ title: Avoid Biased Stopping Times
 
 When you run an A/B test, you should avoid stopping the experiment as soon as the results "look" significant. Using a stopping time that is dependent upon the results of the experiment can inflate your false-positive rate substantially.
 
-To understand why this is so, let's look at a simpler experimental problem. Let's say that we have a coin in front of us, and we want to know whether it's biased -- whether it lands heads-up with probability other than \\(50\%\\). If we flip the coin \\(n\\) times and it lands heads-up on \\(k\\) of them, then we know that the posterior distribution for the coin's bias is \\(p \sim Beta(k+1, n-k+1)\\). So if we do this and 0.5 isn't within a 95% credible interval for \\(p\\), then we would conclude that the coin is biased with p-value \\(<= 0.05\\). This is all fine as long as the number of flips we perform, \\(n\\), doesn't depend on the results of the previous flips. If we do *that*, then we bias the experiment to favor extremal outcomes.
+To understand why this is so, let's look at a simpler experimental problem. Let's say that we have a coin in front of us, and we want to know whether it's biased -- whether it lands heads-up with probability other than \\(50\%\\). If we flip the coin \\(n\\) times and it lands heads-up on \\(k\\) of them, then we know that the posterior distribution for the coin's bias is \\(p \sim Beta(k+1, n-k+1)\\). So if we do this and \\(0.5\\) isn't within a \\(95\%\\) credible interval for \\(p\\), then we would conclude that the coin is biased with p-value \\(<= 0.05\\). This is all fine as long as the number of flips we perform, \\(n\\), doesn't depend on the results of the previous flips. If we do *that*, then we bias the experiment to favor extremal outcomes.
 
 Let's clarify this simulating these two experimental procedures in code.
 
@@ -52,15 +52,17 @@ In [65]: biased_procedure(10000)
 Out[65]: 0.4912
 ```
 
-Almost *half* of the experiments under the biased procedure produced a false positive. Conversely, \\(5.26\%\\) of the unbiased procedure experiments resulted in a false positive -- which is close to the 5% false positive rate the we expected, given our p-value.
+Almost *half* of the experiments under the biased procedure produced a false positive. Conversely, \\(5.26\%\\) of the unbiased procedure experiments resulted in a false positive -- which is close to the \\(5\%\\) false positive rate the we expected, given our p-value.
 
 ## Practical Solutions
 
-The easiest way to avoid this problem is to choose a stopping time that's independent of the test results. You could, for example, decide in advance to run the test for exactly two weeks, no matter the results you observe during the test's tenure. Or you could decide to run the test until each bucket has received more than \\(10,000\\) visitors, again ignoring the test results until that condition is met. When you can afford to wait, setting a results-independent stopping time is the easiest and most reliable way to solve this problem.
+The easiest way to avoid this problem is to choose a stopping time that's independent of the test results. You could, for example, decide in advance to run the test for exactly two weeks, no matter the results you observe during the test's tenure. Or you could decide to run the test until each bucket has received more than \\(10,000\\) visitors, again ignoring the test results until that condition is met.
+
+When you can afford to wait, I strongly recommend doing this. Setting a results-independent stopping time is the easiest and most reliable way to avoid biased stopping times.
 
 Very, very rarely, doing this may require some steel-jawed stoicism; it's hard to continue an A/B test when A's empirical conversion rate is half of B's, and you feel like you're burning money every day that the test continues. In those cases, it would be nice if there were some way to stop the test early when the results are extreme.
 
-It's somewhat possible to do this, but one has to be careful. Let's return to the coin example above. Let's again assume that it's fair: For each \\(n\\), what's the right p-value to ensure that when we evaluate the test after "peeking" after the first \\(n\\) results come in, our false positive rate stays at 5%? Let's find out empirically for a few values of \\(n\\):
+It's somewhat possible to do this, but one has to be careful. Let's return to the coin example above. Let's again assume that it's fair: For each \\(n\\), what's the right p-value to ensure that when we evaluate the test after "peeking" after the first \\(n\\) results come in, our false positive rate stays at \\(5\%\\)? Let's find out empirically for a few values of \\(n\\):
 
 ```python
 def find_p_value(n):
@@ -112,7 +114,7 @@ plt.fill_between(np.arange(1, 101), lower_bound, upper_bound, alpha=0.5, linewid
 
 ![limits](https://i.imgur.com/1H24qZE.png)
 
-This tells us, e.g., that if we peek at the experiment after 40 flips and want to know if the results are bad enough to stop the experiment, the answer is "yes" if fewer than \\(\approx 30\% = 12\\) of the flips landed heads up, and is "no" otherwise. (The graph should be ignored for \\(n \leq 8\\), since it isn't even possible to arrive outside the bounds before then.)
+This tells us, e.g., that if we peek at the experiment after 40 flips and want to know if the results are bad enough to stop the experiment, the answer is "yes" if fewer than \\(\approx 30\% = 12\\) of the flips landed heads up, and is "no" otherwise. (The graph should be ignored for \\(n \leq 8\\), since it isn't even possible to arrive outside the bounds before then.) Something I want to stress is that we *are not* simply computing the naive \\(95\%\\) credible intervals after each flip; we are being much more stringent. Indeed, \\(\mathbb{P}(Bin(40, 0.5) \leq 12) \approx 0.0083\\).
 
 One can easily re-use this idea in the context of an A/B test; instead of the simple model for flipping a coin, you'd use whatever posterior model you have for your experiment, and instead of the null hypothesis being that the coin is unbiased, it would be that each variant's true rate is really no better than the control's.
 

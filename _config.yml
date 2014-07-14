@@ -12,7 +12,7 @@ url:              http://www.slaterstich.com
 baseurl:          /ab_testing_statistics/
 author:
   name:           Slater
-  url:            https://www.slaterstich.com
+  url:            http://www.slaterstich.com
   email:          slater.stich@gmail.com
 
 # Custom vars
