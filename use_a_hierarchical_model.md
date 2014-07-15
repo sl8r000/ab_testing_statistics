@@ -25,7 +25,7 @@ So if you have *one* observation of \\(2.326\\), you would reject the hypothesis
 
 <figure>
 <img src="http://i.imgur.com/fxXAWg8.png">
-<figcaption style="font-size: 0.5em; text-align: center">If you draw \\(100\\) samples from the distribution above, you should expect \\(10\\) to lie above the solid line, \\(5\\) to lie above the dashed line, and 1 to lie above the dotted line.</figcaption>
+<figcaption style="font-size: 0.5em; text-align: center">If you draw \(100\) samples from the distribution above, you should expect \(10\) to lie above the solid line, \(5\) to lie above the dashed line, and 1 to lie above the dotted line.</figcaption>
 </figure>
 
 It's rare to have an A/B test with \\(100\\) different variants, but the same pattern occurs with fewer variants too -- it's just less pronounced. Failing to account to this will inflate your false positive rate whenever you run a test with multiple variants.
@@ -206,7 +206,8 @@ Remember that Bucket E was observed to have \\(63\\) successes out of \\(100\\) 
 ```python
 In [10]: mcmc.trace('true_rates')[:][:,4].mean()
 Out[10]: 0.56984807002774718
-``
+```
+
 Recall that the true (unobserved) success rate for Bucket E was about \\(58.8\%\\). So rounding the above to \\(57.0\%\\) gives a much better estimate than the empirical rate of \\(63\%\\): An error of \\(1.8\%\\) rather than \\(4.2\%\\). Again, this is because hierarchical models shrink the individual posteriors towards the family-wise posterior. (This is essentially just "regression to the mean" in a special case.)
 
 *Second*, having the full set of posterior distributions gives you a lot of flexibility in making more complicated inferences. As a simple example, suppose you wanted to know just how much better Bucket E's rate is than Bucket A's. No problem; you know the posterior distributions \\(X\_E\\) and \\(X\_A\\), so you know the posterior distribution for \\(X\_E - X\_A\\), and you can easily compute, e.g., whether \\(\mathbb{P}(X\_E - X\_A \geq 0.05)\\). In fact, life is even easier if you have a ton of posterior samples; you can just count the percentage of these samples for which \\(X\_E - X\_A \geq 0.5\\) holds.
