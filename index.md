@@ -26,4 +26,4 @@ If you stop an A/B test as soon as the results "look significant", you put yours
 Follow-up testing is a cheap way to double-check your test. Do it! Also, be mindful of your overall success rate; when this is low, you should be especially suspicious of successful tests.
 
 ### [For God's Sake, Pay Attention to the Time Series]({{ site.baseurl }}\#)
-Coming soon. For now, just worry.
+Coming soon. For now, just worry :-)
