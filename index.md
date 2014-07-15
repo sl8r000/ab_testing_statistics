@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Stastical Recommendations for A/B Testing
+# Stastical Advice for A/B Testing
 
 A/B testing is awesome. It's fun, it's lucrative, and it's one of the most visible and impactful things that you can do as a data scientist / statistician / anyone-interested-in-optimization at a company. It's undeniably satisfying to see a change you proposed make a multi-million dollar difference. (If only you could get paid on commission!)
 
